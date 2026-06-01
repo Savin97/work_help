@@ -1,5 +1,6 @@
 import io
 import csv
+import base64
 from datetime import date
 from pathlib import Path
 from typing import Optional
@@ -268,7 +269,7 @@ async def import_preview(
         "headers": headers,
         "rows": rows,
         "filename": filename,
-        "file_content": content.decode("latin-1"),
+        "file_content": base64.b64encode(content).decode("ascii"),
         "industries": INDUSTRIES,
         "industry_labels": INDUSTRY_LABELS,
         "fields": ["company", "contact_name", "phone", "email", "industry", "equipment_interest", "source", "notes", "next_followup_date"],
@@ -281,7 +282,7 @@ async def import_do(
     db: Session = Depends(get_db),
 ):
     form = await request.form()
-    file_content = form.get("file_content", "")
+    file_content_b64 = form.get("file_content", "")
     filename = form.get("filename", "")
     default_status = form.get("default_status", "dormant")
     default_industry = form.get("default_industry", "other")
@@ -294,14 +295,16 @@ async def import_do(
 
     rows = []
     try:
+        content = base64.b64decode(file_content_b64)
         if filename.endswith(".xlsx"):
             import openpyxl
-            wb = openpyxl.load_workbook(io.BytesIO(file_content.encode("latin-1")))
+            wb = openpyxl.load_workbook(io.BytesIO(content))
             ws = wb.active
             all_rows = list(ws.iter_rows(values_only=True))
             rows = [list(r) for r in all_rows[1:]]
         else:
-            reader = csv.reader(io.StringIO(file_content))
+            text = content.decode("utf-8-sig", errors="replace")
+            reader = csv.reader(io.StringIO(text))
             all_rows = list(reader)
             rows = all_rows[1:]
     except Exception as e:

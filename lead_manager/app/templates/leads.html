@@ -49,7 +49,7 @@
         <th class="px-4 py-3 text-left">Company</th>
         <th class="px-4 py-3 text-left">Contact</th>
         <th class="px-4 py-3 text-left">Industry</th>
-        <th class="px-4 py-3 text-left">Equipment Interest</th>
+        <th class="px-4 py-3 text-left">Notes</th>
         <th class="px-4 py-3 text-left">Status</th>
         <th class="px-4 py-3 text-left">Follow-up</th>
         <th class="px-4 py-3"></th>
@@ -66,15 +66,18 @@
           {% if lead.phone %}<div class="text-xs text-gray-400">{{ lead.phone }}</div>{% endif %}
         </td>
         <td class="px-4 py-3 text-gray-600">{{ industry_labels.get(lead.industry, lead.industry or "—") }}</td>
-        <td class="px-4 py-3 text-gray-600 max-w-xs truncate">{{ lead.equipment_interest or "—" }}</td>
+        <td class="px-4 py-3 text-gray-600 max-w-xs truncate">{{ lead.notes or "—" }}</td>
         <td class="px-4 py-3">
           <span class="px-2 py-0.5 rounded-full text-xs font-medium status-{{ lead.status }}">{{ status_labels.get(lead.status, lead.status) }}</span>
         </td>
         <td class="px-4 py-3 text-xs {% if lead.next_followup_date and lead.next_followup_date.isoformat() < today %}text-red-500 font-semibold{% else %}text-gray-500{% endif %}">
           {{ lead.next_followup_date or "—" }}
         </td>
-        <td class="px-4 py-3 text-right">
+        <td class="px-4 py-3 text-right flex items-center justify-end gap-3">
           <a href="/leads/{{ lead.id }}" class="text-blue-600 hover:underline text-xs">View</a>
+          <form method="post" action="/leads/{{ lead.id }}/delete" onsubmit="return confirm('Delete {{ lead.company }}?')">
+            <button type="submit" class="text-red-400 hover:text-red-600 text-xs">✕</button>
+          </form>
         </td>
       </tr>
       {% endfor %}

@@ -1,0 +1,3 @@
+.venv/
+lead_manager/data/
+lead_manager/app/__pycache__/
