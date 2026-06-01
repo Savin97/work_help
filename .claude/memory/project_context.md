@@ -7,15 +7,22 @@ metadata:
   originSessionId: e207d8a4-c203-4833-ab6d-a19710a513c1
 ---
 
-**Status: Complete and committed to git (June 2026).**
+**Status: Live in production (June 2026).**
 
-Local Python/FastAPI lead management & outreach tool for a small Israeli business that sells/services scientific analytical equipment (spectrometers, UV analysers, gas analysers, pharma dissolution/diffusion testers, etc.).
+Python/FastAPI lead management & outreach tool for a small Israeli business that sells/services scientific analytical equipment (spectrometers, UV analysers, gas analysers, pharma dissolution/diffusion testers, etc.).
 
 **Why:** Business is in financial distress (June 2026, only 1 order all year). They shut down their website to cut costs. They rely on 3–4 repeat clients and do little outreach.
 
-**How to apply:** The goal is zero ongoing cost — everything runs locally (`python run.py`). No hosting, no cloud services.
+**Production deployment:**
+- URL: `https://work-admin.analytica.systems`
+- Server: DigitalOcean droplet (shared with `harbor-markets.com`)
+- App path on server: `/var/www/work_help/lead_manager/`
+- Venv: `/var/www/work_help/.venv/`
+- Systemd service: `leadmanager` (port 8001, host 127.0.0.1)
+- nginx: `/etc/nginx/sites-available/work_admin` → proxies to port 8001
+- DB: SQLite at `/var/www/work_help/lead_manager/data/leads.db`
 
-Project lives at: `/home/Michael/projects/work_help/lead_manager/`
+Local dev path: `/home/Michael/projects/work_help/lead_manager/`
 
 **Stack:** Python + FastAPI + SQLite (SQLAlchemy) + Jinja2 + Tailwind CSS (CDN)
 
