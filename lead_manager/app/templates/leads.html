@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Leads — Lead Manager{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-2xl font-bold text-gray-800">Leads</h1>
+  <a href="/leads/new" class="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800">+ Add Lead</a>
+</div>
+
+{% if msg == "deleted" %}
+<div class="mb-4 bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-2 rounded-lg">Lead deleted.</div>
+{% endif %}
+
+<!-- Filters -->
+<form method="get" action="/leads" class="bg-white rounded-xl shadow p-4 mb-5 flex flex-wrap gap-3 items-end">
+  <div>
+    <label class="block text-xs text-gray-500 mb-1">Search</label>
+    <input name="search" value="{{ search }}" placeholder="Company, contact, equipment…"
+      class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500 mb-1">Status</label>
+    <select name="status" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <option value="">All statuses</option>
+      {% for s in statuses %}
+      <option value="{{ s }}" {% if filter_status == s %}selected{% endif %}>{{ status_labels[s] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500 mb-1">Industry</label>
+    <select name="industry" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <option value="">All industries</option>
+      {% for i in industries %}
+      <option value="{{ i }}" {% if filter_industry == i %}selected{% endif %}>{{ industry_labels[i] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="bg-blue-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-blue-700">Filter</button>
+  <a href="/leads" class="text-sm text-gray-500 hover:text-gray-700 py-1.5">Clear</a>
+</form>
+
+<!-- Table -->
+{% if leads %}
+<div class="bg-white rounded-xl shadow overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+      <tr>
+        <th class="px-4 py-3 text-left">Company</th>
+        <th class="px-4 py-3 text-left">Contact</th>
+        <th class="px-4 py-3 text-left">Industry</th>
+        <th class="px-4 py-3 text-left">Equipment Interest</th>
+        <th class="px-4 py-3 text-left">Status</th>
+        <th class="px-4 py-3 text-left">Follow-up</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for lead in leads %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 font-medium text-gray-800">
+          <a href="/leads/{{ lead.id }}" class="hover:text-blue-700">{{ lead.company }}</a>
+        </td>
+        <td class="px-4 py-3 text-gray-600">
+          {{ lead.contact_name or "—" }}
+          {% if lead.phone %}<div class="text-xs text-gray-400">{{ lead.phone }}</div>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-gray-600">{{ industry_labels.get(lead.industry, lead.industry or "—") }}</td>
+        <td class="px-4 py-3 text-gray-600 max-w-xs truncate">{{ lead.equipment_interest or "—" }}</td>
+        <td class="px-4 py-3">
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium status-{{ lead.status }}">{{ status_labels.get(lead.status, lead.status) }}</span>
+        </td>
+        <td class="px-4 py-3 text-xs {% if lead.next_followup_date and lead.next_followup_date.isoformat() < today %}text-red-500 font-semibold{% else %}text-gray-500{% endif %}">
+          {{ lead.next_followup_date or "—" }}
+        </td>
+        <td class="px-4 py-3 text-right">
+          <a href="/leads/{{ lead.id }}" class="text-blue-600 hover:underline text-xs">View</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="text-xs text-gray-400 mt-2 text-right">{{ leads|length }} lead(s)</p>
+{% else %}
+<div class="bg-white rounded-xl shadow p-12 text-center">
+  <p class="text-gray-400 text-lg mb-4">No leads found.</p>
+  <div class="flex gap-3 justify-center">
+    <a href="/leads/new" class="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800">+ Add Lead</a>
+    <a href="/import" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700">Import from Excel</a>
+  </div>
+</div>
+{% endif %}
+
+<script>
+// store today's date for row highlighting
+const today = "{{ today }}";
+</script>
+{% endblock %}

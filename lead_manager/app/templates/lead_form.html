@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Lead Manager{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ title }}</h1>
+
+  <form method="post" action="{{ action }}" class="bg-white rounded-xl shadow p-6 space-y-4">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company <span class="text-red-500">*</span></label>
+        <input name="company" value="{{ lead.company if lead else '' }}" required
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Contact Name</label>
+        <input name="contact_name" value="{{ lead.contact_name if lead else '' }}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input name="phone" value="{{ lead.phone if lead else '' }}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input name="email" type="email" value="{{ lead.email if lead else '' }}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+        <select name="industry" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+          {% for i in industries %}
+          <option value="{{ i }}" {% if lead and lead.industry == i %}selected{% endif %}>{{ industry_labels[i] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Equipment Interest</label>
+        <input name="equipment_interest" value="{{ lead.equipment_interest if lead else '' }}"
+          placeholder="e.g. dissolution tester, FTIR spectrometer"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+          {% for s in statuses %}
+          <option value="{{ s }}" {% if lead and lead.status == s %}selected{% elif not lead and s == "new" %}selected{% endif %}>{{ status_labels[s] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Source</label>
+        <input name="source" value="{{ lead.source if lead else '' }}"
+          placeholder="e.g. Analytica 2024, LinkedIn, referral"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Next Follow-up Date</label>
+        <input name="next_followup_date" type="date" value="{{ lead.next_followup_date.isoformat() if lead and lead.next_followup_date else '' }}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+        <textarea name="notes" rows="3"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">{{ lead.notes if lead else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <button type="submit" class="bg-blue-700 text-white text-sm px-6 py-2 rounded-lg hover:bg-blue-800">Save</button>
+      <a href="/leads" class="text-sm text-gray-500 hover:text-gray-700 py-2">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

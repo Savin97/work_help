@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Lead Manager{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .status-new           { background:#dbeafe; color:#1e40af; }
+    .status-contacted     { background:#e0e7ff; color:#3730a3; }
+    .status-engaged       { background:#fef3c7; color:#92400e; }
+    .status-proposal_sent { background:#fce7f3; color:#9d174d; }
+    .status-won           { background:#d1fae5; color:#065f46; }
+    .status-lost          { background:#fee2e2; color:#991b1b; }
+    .status-dormant       { background:#f3f4f6; color:#6b7280; }
+    [dir="rtl"] { font-family: Arial, sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Nav -->
+<nav class="bg-blue-900 text-white shadow">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
+    <a href="/" class="font-bold text-lg tracking-tight">📊 Lead Manager</a>
+    <a href="/leads" class="hover:text-blue-200 text-sm">Leads</a>
+    <a href="/leads/new" class="hover:text-blue-200 text-sm">+ Add Lead</a>
+    <a href="/import" class="hover:text-blue-200 text-sm">Import</a>
+    <a href="/templates" class="hover:text-blue-200 text-sm">Templates</a>
+    <a href="/discovery" class="hover:text-blue-200 text-sm">Discovery Guide</a>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

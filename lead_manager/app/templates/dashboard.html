@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Lead Manager{% endblock %}
+{% block content %}
+
+<h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard</h1>
+
+<!-- Pipeline funnel -->
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
+  {% set status_order = ["new","contacted","engaged","proposal_sent","won","lost","dormant"] %}
+  {% for s in status_order %}
+  <a href="/leads?status={{ s }}" class="rounded-lg p-3 text-center hover:opacity-80 transition status-{{ s }}">
+    <div class="text-2xl font-bold">{{ stats.status_counts.get(s, 0) }}</div>
+    <div class="text-xs mt-1">{{ status_labels[s] }}</div>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+
+  <!-- Overdue follow-ups -->
+  <div class="bg-white rounded-xl shadow p-5">
+    <h2 class="font-semibold text-red-700 mb-3">
+      ⚠️ Overdue Follow-ups
+      <span class="ml-2 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">{{ stats.overdue|length }}</span>
+    </h2>
+    {% if stats.overdue %}
+    <ul class="divide-y">
+      {% for lead in stats.overdue %}
+      <li class="py-2 flex justify-between items-center">
+        <a href="/leads/{{ lead.id }}" class="text-blue-700 hover:underline font-medium text-sm">{{ lead.company }}</a>
+        <div class="text-right">
+          <span class="text-xs text-red-500 font-medium">{{ lead.next_followup_date }}</span>
+          <span class="ml-2 text-xs text-gray-400">{{ lead.contact_name or "" }}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-sm text-gray-400 italic">No overdue follow-ups — great job!</p>
+    {% endif %}
+  </div>
+
+  <!-- Due this week -->
+  <div class="bg-white rounded-xl shadow p-5">
+    <h2 class="font-semibold text-blue-700 mb-3">
+      📅 Due This Week
+      <span class="ml-2 bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{{ stats.due_this_week|length }}</span>
+    </h2>
+    {% if stats.due_this_week %}
+    <ul class="divide-y">
+      {% for lead in stats.due_this_week %}
+      <li class="py-2 flex justify-between items-center">
+        <a href="/leads/{{ lead.id }}" class="text-blue-700 hover:underline font-medium text-sm">{{ lead.company }}</a>
+        <div class="text-right">
+          <span class="text-xs text-gray-500 font-medium">{{ lead.next_followup_date }}</span>
+          <span class="ml-2 text-xs text-gray-400">{{ lead.contact_name or "" }}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-sm text-gray-400 italic">Nothing due this week.</p>
+    {% endif %}
+  </div>
+
+  <!-- By industry -->
+  <div class="bg-white rounded-xl shadow p-5">
+    <h2 class="font-semibold text-gray-700 mb-3">📂 Leads by Industry</h2>
+    {% if stats.industry_counts %}
+    <ul class="space-y-2">
+      {% for ind, cnt in stats.industry_counts.items()|sort(attribute="1", reverse=true) %}
+      <li class="flex items-center justify-between">
+        <a href="/leads?industry={{ ind }}" class="text-sm text-blue-700 hover:underline">{{ industry_labels.get(ind, ind) }}</a>
+        <span class="text-sm font-semibold text-gray-600">{{ cnt }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-sm text-gray-400 italic">No leads yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Quick actions -->
+  <div class="bg-white rounded-xl shadow p-5">
+    <h2 class="font-semibold text-gray-700 mb-3">🚀 Quick Actions</h2>
+    <div class="space-y-2">
+      <a href="/leads/new" class="block w-full text-center bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800">+ Add New Lead</a>
+      <a href="/import" class="block w-full text-center bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700">📥 Import from Excel / CSV</a>
+      <a href="/templates" class="block w-full text-center bg-teal-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-teal-700">✉️ Email & Call Templates</a>
+      <a href="/discovery" class="block w-full text-center bg-amber-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-amber-700">🔍 Discovery Guide</a>
+    </div>
+    <p class="mt-4 text-xs text-gray-400 text-center">Total leads: <strong class="text-gray-600">{{ stats.total }}</strong></p>
+  </div>
+
+</div>
+{% endblock %}
